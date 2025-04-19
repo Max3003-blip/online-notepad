@@ -90,40 +90,55 @@
     <p class="saved">Autosaved to your browser</p>
   </div>
 
-  <script>
-    const notepad = document.getElementById("notepad");
+  <p id="counter" style="text-align:center; margin-top: 15px; font-size: 14px; color: #555;">
+  Words: 0 | Characters: 0
+</p>
 
-    // Load saved note on page load
-    window.onload = () => {
-      const saved = localStorage.getItem("savedNote");
-      if (saved) notepad.value = saved;
-    };
+ <script>
+  const notepad = document.getElementById("notepad");
+  const counter = document.getElementById("counter");
 
-    // Auto-save on input
-    notepad.addEventListener("input", () => {
-      localStorage.setItem("savedNote", notepad.value);
-    });
+  // Load saved note on page load
+  window.onload = () => {
+    const saved = localStorage.getItem("savedNote");
+    if (saved) notepad.value = saved;
+    updateCounter();
+  };
 
-    function copyText() {
-      notepad.select();
-      document.execCommand("copy");
-      alert("Copied to clipboard!");
+  // Auto-save + counter update
+  notepad.addEventListener("input", () => {
+    localStorage.setItem("savedNote", notepad.value);
+    updateCounter();
+  });
+
+  function copyText() {
+    notepad.select();
+    document.execCommand("copy");
+    alert("Copied to clipboard!");
+  }
+
+  function clearText() {
+    if (confirm("Are you sure you want to clear the note?")) {
+      notepad.value = "";
+      localStorage.removeItem("savedNote");
+      updateCounter();
     }
+  }
 
-    function clearText() {
-      if (confirm("Are you sure you want to clear the note?")) {
-        notepad.value = "";
-        localStorage.removeItem("savedNote");
-      }
-    }
+  function downloadText() {
+    const blob = new Blob([notepad.value], { type: "text/plain" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "note.txt";
+    link.click();
+  }
 
-    function downloadText() {
-      const blob = new Blob([notepad.value], { type: "text/plain" });
-      const link = document.createElement("a");
-      link.href = URL.createObjectURL(blob);
-      link.download = "note.txt";
-      link.click();
-    }
-  </script>
+  function updateCounter() {
+    const text = notepad.value.trim();
+    const wordCount = text === "" ? 0 : text.split(/\s+/).length;
+    const charCount = text.length;
+    counter.textContent = `Words: ${wordCount} | Characters: ${charCount}`;
+  }
+</script>
 </body>
 </html>

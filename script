@@ -1,0 +1,32 @@
+const notepad = document.getElementById("notepad");
+
+// Load saved text on load
+window.onload = () => {
+  notepad.value = localStorage.getItem("savedNote") || "";
+};
+
+// Save on every keystroke
+notepad.addEventListener("input", () => {
+  localStorage.setItem("savedNote", notepad.value);
+});
+
+function copyText() {
+  notepad.select();
+  document.execCommand("copy");
+  alert("Text copied!");
+}
+
+function clearText() {
+  if (confirm("Clear all notes? This can't be undone.")) {
+    notepad.value = "";
+    localStorage.removeItem("savedNote");
+  }
+}
+
+function downloadText() {
+  const blob = new Blob([notepad.value], { type: "text/plain" });
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = "notepad.txt";
+  link.click();
+}
